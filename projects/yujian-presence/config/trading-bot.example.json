@@ -1,0 +1,56 @@
+{
+  "_comment": "OKX Trading Bot Configuration Template",
+  "_warning": "NEVER commit real API keys to git! Copy to trading-bot.json and add to .gitignore",
+  
+  "okx": {
+    "apiKey": "YOUR_OKX_API_KEY",
+    "secretKey": "YOUR_OKX_SECRET_KEY",
+    "passphrase": "YOUR_OKX_PASSPHRASE",
+    "baseUrl": "https://www.okx.com",
+    "testnet": true
+  },
+  
+  "trading": {
+    "symbol": "BTC-USDT-SWAP",
+    "strategy": "grid",
+    "enabled": false,
+    "paperTrading": true
+  },
+  
+  "gridStrategy": {
+    "upperPrice": 50000,
+    "lowerPrice": 40000,
+    "gridCount": 10,
+    "orderSize": 0.01,
+    "rebalanceThreshold": 0.05
+  },
+  
+  "riskManagement": {
+    "maxPositionSize": 0.1,
+    "maxDailyLoss": 100,
+    "maxDrawdown": 10,
+    "stopLossPercent": 2,
+    "takeProfitPercent": 4,
+    "maxOpenOrders": 10,
+    "cooldownAfterLoss": 30
+  },
+  
+  "notifications": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "YOUR_BOT_TOKEN",
+      "chatId": "YOUR_CHAT_ID"
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "https://api.yujian.team/history"
+    }
+  },
+  
+  "logging": {
+    "level": "info",
+    "file": "logs/trading-bot.log",
+    "maxSize": "10m",
+    "maxFiles": 5
+  }
+}

@@ -1,3 +1,0 @@
-lab.yujian.team {
-    reverse_proxy lab-web:80
-}

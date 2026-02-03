@@ -1,0 +1,14 @@
+node_modules/
+*.onnx
+*.tar.bz2
+*.wav
+*.db
+.DS_Store
+.env
+dist/
+.output/
+.nuxt/
+.vercel/
+*.log
+memory/*.md
+!memory/README.md

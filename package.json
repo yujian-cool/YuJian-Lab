@@ -1,0 +1,13 @@
+{
+  "name": "message-system",
+  "version": "1.0.0",
+  "description": "Message routing system with bug fixes",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:node": "node test-runner.js"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}

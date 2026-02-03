@@ -1,0 +1,100 @@
+lab.yujian.team {
+    # API 请求反向代理到后端（避免跨域和暴露 API 域名）
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy backend:3001 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # WebSocket 连接反向代理
+    handle /ws/* {
+        reverse_proxy backend:3001 {
+            transport http {
+                compression off
+                dial_timeout 10s
+                keepalive 5m
+            }
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+            header_up Connection Upgrade
+            header_up Upgrade websocket
+        }
+    }
+    
+    # 静态前端资源
+    handle /* {
+        reverse_proxy frontend:80
+    }
+}
+
+api.yujian.team {
+    reverse_proxy backend:3001 {
+        # WebSocket 支持配置
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+        
+        # WebSocket 升级支持
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
+    }
+    
+    # WebSocket 特定路由
+    handle /ws/* {
+        reverse_proxy backend:3001 {
+            # WebSocket 长连接配置
+            transport http {
+                # 禁用压缩以提高 WebSocket 性能
+                compression off
+                
+                # 连接超时设置
+                dial_timeout 10s
+                
+                # 保持长连接
+                keepalive 5m
+            }
+            
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+            
+            # WebSocket 协议升级头
+            header_up Connection Upgrade
+            header_up Upgrade websocket
+        }
+    }
+    
+    # CORS 预检请求处理
+    @options {
+        method OPTIONS
+    }
+    handle @options {
+        header {
+            Access-Control-Allow-Origin "*"
+            Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+            Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+            Access-Control-Max-Age "86400"
+        }
+        respond 204
+    }
+    
+    # 标准 CORS 头
+    header {
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    }
+}
+
+# 健康检查端点（内部使用）
+:8080 {
+    respond /health "OK" 200
+}

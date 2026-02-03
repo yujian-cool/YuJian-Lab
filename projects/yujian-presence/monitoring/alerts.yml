@@ -1,0 +1,47 @@
+groups:
+  - name: websocket_alerts
+    rules:
+      - alert: WebSocketHighConnectionCount
+        expr: websocket_connections_total > 8000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "WebSocket 连接数过高"
+          description: "当前连接数 {{ $value }}，接近最大限制 10000"
+
+      - alert: WebSocketNoConnections
+        expr: websocket_connections_total == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WebSocket 无活跃连接"
+          description: "WebSocket 服务可能没有正常工作"
+
+      - alert: BackendDown
+        expr: up{job="yujian-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "后端服务不可用"
+          description: "后端服务已停止响应"
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name="yujian-backend"} > 400000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "后端内存使用过高"
+          description: "内存使用超过 400MB"
+
+      - alert: HighCPUUsage
+        expr: container_cpu_usage_seconds_total{name="yujian-backend"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "后端 CPU 使用过高"
+          description: "CPU 使用率超过 80%"
